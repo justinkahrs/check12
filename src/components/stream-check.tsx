@@ -12,7 +12,7 @@ import {
 export default function StreamCheck() {
   const [isWebcamOn, setIsWebcamOn] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastAudioLevelRef = useRef(0);
 
@@ -22,14 +22,16 @@ export default function StreamCheck() {
     let dataArray: Uint8Array | null = null;
     let animationFrameId: number | null = null;
 
+    const videoElement = videoRef.current;
+
     const startWebcam = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true,
         });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+        if (videoElement) {
+          videoElement.srcObject = stream;
         }
 
         audioContext = new AudioContext();
@@ -76,8 +78,8 @@ export default function StreamCheck() {
     }
 
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+      if (videoElement && videoElement.srcObject) {
+        const tracks = (videoElement.srcObject as MediaStream).getTracks();
         tracks.forEach((track) => track.stop());
       }
       if (audioContext) {
