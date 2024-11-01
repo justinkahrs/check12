@@ -2,10 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+} from "@mui/material";
 
 export default function StreamCheck() {
   const [isWebcamOn, setIsWebcamOn] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [error, setError] = useState(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastAudioLevelRef = useRef(0);
 
@@ -57,6 +64,7 @@ export default function StreamCheck() {
         updateAudioLevel();
       } catch (error) {
         console.error("Error accessing webcam or microphone:", error);
+        setError("There was an issue connecting to the webcam.");
       }
     };
 
@@ -85,23 +93,24 @@ export default function StreamCheck() {
     setIsWebcamOn(!isWebcamOn);
   };
 
+  const closeErrorModal = () => {
+    setError(null);
+  };
+
   const getGradientStyle = (level: number) => {
     let color: string;
     if (level <= 0.75) {
-      // Interpolate between light green and green
       const r = Math.round(144 + (50 - 144) * (level / 0.75));
       const g = Math.round(238 + (205 - 238) * (level / 0.75));
       const b = Math.round(144 + (50 - 144) * (level / 0.75));
       color = `rgb(${r}, ${g}, ${b})`;
     } else if (level <= 0.85) {
-      // Interpolate between green and yellow
       const factor = (level - 0.75) / 0.1;
       const r = Math.round(50 + (255 - 50) * factor);
       const g = Math.round(205 + (215 - 205) * factor);
       const b = Math.round(50 * (1 - factor));
       color = `rgb(${r}, ${g}, ${b})`;
     } else {
-      // Interpolate between yellow and red
       const factor = (level - 0.85) / 0.15;
       const r = 255;
       const g = Math.round(215 * (1 - factor));
@@ -117,7 +126,10 @@ export default function StreamCheck() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div
+      className="bg-white rounded-lg shadow-lg overflow-hidden"
+      suppressHydrationWarning // figure out why this is happening for this component
+    >
       <div
         className={`aspect-video ${
           isWebcamOn ? "" : "h-64 md:h-80 lg:h-96"
@@ -155,6 +167,13 @@ export default function StreamCheck() {
           {isWebcamOn ? "Turn Off Webcam" : "Turn On Webcam"}
         </Button>
       </div>
+      <Dialog open={Boolean(error)} onClose={closeErrorModal}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>{error}</DialogContent>
+        <DialogActions>
+          <Button onClick={closeErrorModal}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
