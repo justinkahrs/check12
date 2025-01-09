@@ -133,9 +133,7 @@ export default function StreamCheck() {
       suppressHydrationWarning // figure out why this is happening for this component
     >
       <div
-        className={`aspect-video ${
-          isWebcamOn ? "" : "h-64 md:h-80 lg:h-96"
-        } bg-gray-200 relative`}
+        className="w-full max-w-full aspect-video h-64 md:h-80 lg:h-96 bg-gray-200 relative overflow-hidden"
       >
         {isWebcamOn ? (
           <video

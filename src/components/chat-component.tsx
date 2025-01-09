@@ -57,7 +57,7 @@ export function ChatComponentComponent() {
   }, [counter, messages.length])
 
   return (
-    <div className="w-[285px] h-[500px] bg-gradient-to-b from-purple-400 to-blue-400 rounded-lg overflow-hidden shadow-xl">
+    <div className="w-full sm:w-[285px] flex-none h-[500px] bg-gradient-to-b from-purple-400 to-blue-400 rounded-lg overflow-hidden shadow-xl">
       <div 
         ref={chatContainerRef}
         className="w-full h-full overflow-y-auto scrollbar-hide"
